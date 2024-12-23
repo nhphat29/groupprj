@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+<body>
+<h1>Chat Room</h1>
+<ul id="messageArea"></ul>
+<form id="messageForm">
+    <input type="text" id="messageInput" placeholder="Type a message..." required>
+    <button type="submit">Send</button>
+</form>
+<script>
+    var messageArea = document.querySelector("#messageArea");
+    var messageInput = document.querySelector("#messageInput");
+
+    var socket = new SockJS("/websocket");
+    var stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, onConnected, onError);
+
+    function onConnected() {
+        stompClient.subscribe("/topic/public", onMessageReceived);
+        stompClient.send(
+            "/app/chat.register",
+            {},
+            JSON.stringify({ sender: "Anonymous", type: "JOIN" })
+        );
+        console.log("Connected to WebSocket");
+    }
+
+    function onError(error) {
+        console.error("Could not connect to WebSocket! Please check the connection.");
+    }
+
+    function send(event) {
+        var messageContent = messageInput.value.trim();
+
+        if (messageContent && stompClient) {
+            var chatMessage = {
+                sender: "Anonymous",
+                content: messageContent,
+                type: "CHAT",
+            };
+
+            stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+            messageInput.value = "";
+        }
+        event.preventDefault();
+    }
+
+    function onMessageReceived(payload) {
+        var message = JSON.parse(payload.body);
+
+        var messageElement = document.createElement("li");
+        if (message.type === "JOIN") {
+            messageElement.textContent = message.sender + " joined!";
+        } else if (message.type === "LEAVE") {
+            messageElement.textContent = message.sender + " left!";
+        } else {
+            var textElement = document.createElement("p");
+            textElement.textContent = message.content;
+            messageElement.appendChild(textElement);
+        }
+
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
+
+    document.querySelector("#messageForm").addEventListener("submit", send, true);
+</script>
+</body>
+</html>
