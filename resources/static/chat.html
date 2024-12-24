@@ -3,73 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
+    <title>Group Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .chat-header {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        #messageArea {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #fafafa;
+        }
+        #messageArea li {
+            margin: 5px 0;
+        }
+        #messageForm {
+            display: flex;
+        }
+        #message {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            padding: 10px;
+            margin-left: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<h1>Chat Room</h1>
-<ul id="messageArea"></ul>
-<form id="messageForm">
-    <input type="text" id="messageInput" placeholder="Type a message..." required>
-    <button type="submit">Send</button>
-</form>
-<script>
-    var messageArea = document.querySelector("#messageArea");
-    var messageInput = document.querySelector("#messageInput");
+<button class="logout-btn" onclick="window.location.href='/'">Logout</button>
+<div class="chat-container">
+    <div class="chat-header">Group Chat</div>
+    <ul id="messageArea"></ul>
+    <form id="messageForm">
+        <input type="text" id="message" placeholder="Type your message..." required />
+        <button type="submit" class="btn">Send</button>
+    </form>
+</div>
 
-    var socket = new SockJS("/websocket");
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script>
+    var socket = new SockJS('/websocket');
     var stompClient = Stomp.over(socket);
 
-    stompClient.connect({}, onConnected, onError);
+    var messageArea = document.getElementById('messageArea');
+    var messageForm = document.getElementById('messageForm');
+    var messageInput = document.getElementById('message');
 
-    function onConnected() {
-        stompClient.subscribe("/topic/public", onMessageReceived);
-        stompClient.send(
-            "/app/chat.register",
-            {},
-            JSON.stringify({ sender: "Anonymous", type: "JOIN" })
-        );
-        console.log("Connected to WebSocket");
-    }
+    stompClient.connect({}, function () {
+        stompClient.subscribe('/topic/public', function (message) {
+            var chatMessage = JSON.parse(message.body);
+            var messageElement = document.createElement('li');
+            messageElement.textContent = chatMessage.sender + ": " + chatMessage.content;
+            messageArea.appendChild(messageElement);
+            messageArea.scrollTop = messageArea.scrollHeight;
+        });
+    });
 
-    function onError(error) {
-        console.error("Could not connect to WebSocket! Please check the connection.");
-    }
-
-    function send(event) {
+    messageForm.addEventListener('submit', function (event) {
+        event.preventDefault();
         var messageContent = messageInput.value.trim();
-
-        if (messageContent && stompClient) {
-            var chatMessage = {
+        if (messageContent) {
+            stompClient.send("/app/chat.send", {}, JSON.stringify({
                 sender: "Anonymous",
                 content: messageContent,
-                type: "CHAT",
-            };
-
-            stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
-            messageInput.value = "";
+                type: "CHAT"
+            }));
+            messageInput.value = '';
         }
-        event.preventDefault();
-    }
-
-    function onMessageReceived(payload) {
-        var message = JSON.parse(payload.body);
-
-        var messageElement = document.createElement("li");
-        if (message.type === "JOIN") {
-            messageElement.textContent = message.sender + " joined!";
-        } else if (message.type === "LEAVE") {
-            messageElement.textContent = message.sender + " left!";
-        } else {
-            var textElement = document.createElement("p");
-            textElement.textContent = message.content;
-            messageElement.appendChild(textElement);
-        }
-
-        messageArea.appendChild(messageElement);
-        messageArea.scrollTop = messageArea.scrollHeight;
-    }
-
-    document.querySelector("#messageForm").addEventListener("submit", send, true);
+    });
 </script>
 </body>
 </html>

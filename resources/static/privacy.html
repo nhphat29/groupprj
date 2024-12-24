@@ -9,7 +9,10 @@
         .navbar-brand img {
             max-height: 40px;
         }
-
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
         .nav-link {
             font-size: 14px;
             font-weight: 600;
@@ -56,6 +59,55 @@
             font-size: 20px;
             color: #666;
         }
+        .container2 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 1200px;
+            margin: auto;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .image-section img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .text-section {
+            flex: 1;
+        }
+
+        .text-section h1 {
+            font-size: 40px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .text-section p {
+            font-size: 20px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .text-section a {
+            color: #1877f2;
+            text-decoration: none;
+        }
+
+        .text-section a:hover {
+            text-decoration: underline;
+        }
+        .container3 {
+            margin-left: 30px;
+            margin-bottom: 10px;
+        }
+        .container3 h1 {
+            font-size: 35px;
+        }
+        .container3 ol li {
+            line-height: 2;
+        }
     </style>
 </head>
 <body>
@@ -80,7 +132,7 @@
 </div>
 <p class="note">(*Our privacy based on Messenger's privacy)</p>
 <div class="header1">
-<h1 class="header">Connect <span style="background: -webkit-linear-gradient(45deg, #0099FF -9.4%, #A033FF 51.57%, #FF5280 84.07%, #FF7061 90.59%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">safely and securely</font></font></span> with friends, family and the communities you care about</h1>
+    <h1 class="header">Connect <span style="background: -webkit-linear-gradient(45deg, #0099FF -9.4%, #A033FF 51.57%, #FF5280 84.07%, #FF7061 90.59%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">safely and securely</font></font></span> with friends, family and the communities you care about</h1>
 </div>
 <div class="container1">
     <div class="box">
@@ -95,6 +147,30 @@
         <h3>Dedicated Feedback</h3>
         <p>We review and respond to potentially abusive/misleading content on our platforms using human reviewers. We also enforce our Community Standards and provide new information and resources after you report it.</p>
     </div>
+</div>
+<div class="container2">
+    <div class="image-section">
+        <img src="images/privacyimg.png" alt="pic" />
+    </div>
+    <div class="text-section">
+        <h1>Your personal messages are private</h1>
+        <p>
+            We want you to know how we use your information. We collect information from our product to improve the product experience and protect everyone. We do not use the content of your personal messages to personalize ads.
+        </p>
+        <p>
+            We are committed to not infringing on users' privacy and strive to enhance message security.</a>
+        </p>
+    </div>
+</div>
+<div class="container3">
+    <h1>Community Standards</h1>
+    <ol>
+        <li><b>Respect Others:</b> Treat all users with kindness and respect. Harassment, hate speech, or any form of discrimination is not tolerated.</li>
+        <li><b>No Harmful Content:</b> Avoid sharing or promoting harmful, illegal, or explicit content.</li>
+        <li><b>Privacy Matters:</b> Do not share personal information about yourself or others without consent.</li>
+        <li><b>Authenticity:</b> Use your real identity and refrain from impersonating others.</li>
+        <li><b>Safe Environment:</b> Ensure conversations remain constructive, safe, and inclusive for everyone.</li>
+    </ol>
 </div>
 </body>
 </html>
